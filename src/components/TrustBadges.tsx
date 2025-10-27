@@ -32,7 +32,7 @@ export const TrustBadges = () => {
           {badges.map((badge, index) => {
             const Icon = badge.icon;
             return (
-              <Card key={index} className="border-none bg-card text-center">
+              <Card key={index} className="border bg-card text-center">
                 <CardContent className="pt-8 pb-6">
                   <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                     <Icon className="w-7 h-7 text-primary" />

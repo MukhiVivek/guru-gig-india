@@ -54,7 +54,7 @@ export const FeaturedExperts = () => {
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
           {experts.map((expert, index) => (
-            <Card key={index} className="border-none shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-elevated)] transition-all hover:-translate-y-1">
+            <Card key={index} className="border shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-elevated)] transition-all hover:-translate-y-1">
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4 mb-4">
                   <Avatar className="w-16 h-16 border-2 border-primary/10">

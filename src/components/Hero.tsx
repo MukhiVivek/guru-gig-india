@@ -4,7 +4,7 @@ import heroImage from "@/assets/hero-professional.jpg";
 
 export const Hero = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary/90 pt-20 pb-28">
+    <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary/90  pb-28">
       <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:32px_32px]" />
       
       <div className="container relative mx-auto px-4">

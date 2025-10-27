@@ -63,7 +63,7 @@ export const HowItWorks = () => {
               {steps.professionals.map((step, index) => {
                 const Icon = step.icon;
                 return (
-                  <Card key={index} className="border-none shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-elevated)] transition-shadow">
+                  <Card key={index} className="border shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-elevated)] transition-shadow">
                     <CardContent className="pt-6">
                       <div className="flex gap-4">
                         <div className="flex-shrink-0">
@@ -94,7 +94,7 @@ export const HowItWorks = () => {
               {steps.clients.map((step, index) => {
                 const Icon = step.icon;
                 return (
-                  <Card key={index} className="border-none shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-elevated)] transition-shadow">
+                  <Card key={index} className="border shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-elevated)] transition-shadow">
                     <CardContent className="pt-6">
                       <div className="flex gap-4">
                         <div className="flex-shrink-0">
