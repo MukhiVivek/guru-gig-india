@@ -1,27 +1,10 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import { Briefcase, Mail } from 'lucide-react';
+import { Briefcase, Building2, UserCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
 
-const authSchema = z.object({
-  email: z.string().trim().email({ message: "Invalid email address" }).max(255),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }).max(100),
-});
-
 export default function Auth() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -32,214 +15,74 @@ export default function Auth() {
     }
   }, [user, navigate]);
 
-  const handleEmailAuth = async (type: 'login' | 'signup') => {
-    try {
-      setLoading(true);
-      
-      // Validate input
-      const result = authSchema.safeParse({ email, password });
-      if (!result.success) {
-        const errors = result.error.errors.map(e => e.message).join(', ');
-        toast({
-          variant: "destructive",
-          title: "Validation Error",
-          description: errors,
-        });
-        return;
-      }
-
-      if (type === 'signup') {
-        const redirectUrl = `${window.location.origin}/`;
-        const { error } = await supabase.auth.signUp({
-          email: result.data.email,
-          password: result.data.password,
-          options: {
-            emailRedirectTo: redirectUrl
-          }
-        });
-
-        if (error) throw error;
-
-        toast({
-          title: "Success!",
-          description: "Account created successfully. You can now sign in.",
-        });
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: result.data.email,
-          password: result.data.password,
-        });
-
-        if (error) throw error;
-
-        toast({
-          title: "Welcome back!",
-          description: "You've been signed in successfully.",
-        });
-        navigate('/');
-      }
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "An error occurred during authentication",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleAuth = async () => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        }
-      });
-
-      if (error) throw error;
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "Failed to sign in with Google",
-      });
-      setLoading(false);
+  const handleRoleSelect = (role: 'professional' | 'client') => {
+    if (role === 'professional') {
+      navigate('/professional-dashboard');
+    } else {
+      navigate('/dashboard');
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-2xl">
         <div className="flex items-center justify-center gap-2 mb-8">
           <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
             <Briefcase className="w-6 h-6 text-primary-foreground" />
           </div>
           <span className="text-2xl font-bold">Retire<span className="text-primary">Freelancer</span></span>
         </div>
+        
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2">Join RetireFreelancer</h1>
+          <p className="text-muted-foreground">Choose your path to get started</p>
+        </div>
 
-        <Card className="border shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-2xl">Welcome</CardTitle>
-            <CardDescription>Sign in to your account or create a new one</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
+        <div className="grid gap-6">
+          <Card 
+            className="shadow-xl border-border/50 hover:border-primary/50 transition-all cursor-pointer hover:shadow-2xl group"
+            onClick={() => handleRoleSelect('professional')}
+          >
+            <CardHeader className="text-center pb-4">
+              <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                <UserCircle className="w-12 h-12 text-primary" />
+              </div>
+              <CardTitle className="text-2xl">Retirement Professional</CardTitle>
+              <CardDescription className="text-base">
+                Join as a freelancer and share your expertise
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <div className="text-sm text-muted-foreground space-y-1">
+                <p>✓ Flexible work opportunities</p>
+                <p>✓ Set your own rates</p>
+                <p>✓ Work on your terms</p>
+              </div>
+            </CardContent>
+          </Card>
 
-              <TabsContent value="login" className="space-y-4">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleGoogleAuth}
-                  disabled={loading}
-                >
-                  <Mail className="mr-2 h-4 w-4" />
-                  Continue with Google
-                </Button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
-                    <Input
-                      id="login-email"
-                      type="email"
-                      placeholder="your@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={loading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
-                    <Input
-                      id="login-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={loading}
-                    />
-                  </div>
-                  <Button
-                    className="w-full"
-                    onClick={() => handleEmailAuth('login')}
-                    disabled={loading}
-                  >
-                    {loading ? 'Signing in...' : 'Sign In'}
-                  </Button>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="signup" className="space-y-4">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleGoogleAuth}
-                  disabled={loading}
-                >
-                  <Mail className="mr-2 h-4 w-4" />
-                  Continue with Google
-                </Button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="your@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={loading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={loading}
-                    />
-                  </div>
-                  <Button
-                    className="w-full"
-                    onClick={() => handleEmailAuth('signup')}
-                    disabled={loading}
-                  >
-                    {loading ? 'Creating account...' : 'Create Account'}
-                  </Button>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+          <Card 
+            className="shadow-xl border-border/50 hover:border-secondary/50 transition-all cursor-pointer hover:shadow-2xl group"
+            onClick={() => handleRoleSelect('client')}
+          >
+            <CardHeader className="text-center pb-4">
+              <div className="mx-auto w-20 h-20 rounded-full bg-secondary/10 flex items-center justify-center mb-4 group-hover:bg-secondary/20 transition-colors">
+                <Building2 className="w-12 h-12 text-secondary" />
+              </div>
+              <CardTitle className="text-2xl">Company / Client</CardTitle>
+              <CardDescription className="text-base">
+                Hire experienced professionals for your projects
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <div className="text-sm text-muted-foreground space-y-1">
+                <p>✓ Access verified experts</p>
+                <p>✓ AI-powered matching</p>
+                <p>✓ Flexible engagement models</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
